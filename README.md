@@ -56,9 +56,32 @@ java -cp target RemiPrograma
 
 ## 📂 Estructura de directorios
 
+```bash
+src/
+ └── main/
+     ├── antlr4/
+     │   └── RemiLang.g4             # Gramática del lenguaje
+     └── java/com/remilang/
+         ├── AnalizadorSemantico.java
+         ├── CodeGen.java
+         ├── Main.java               # Léxico
+         ├── MainParse.java          # Sintaxis
+         ├── SemanticMain.java       # Semántica
+         ├── MainCodeGen.java        # Generación de código
+         ├── Simbolo.java
+         ├── TablaSimbolos.java
+         └── Tipo.java
+
+target/
+ ├── RemiPrograma.java               # Código Java generado
+ ├── RemiPrograma.class              # Clase compilada
+ ├── tokens_output.txt               # Tokens del análisis léxico
+ ├── parse_output.txt                # Árbol sintáctico
+ └── semantics_report.txt            # Reporte semántico
+```
 
 ---
 
 ## 📖 Documentación
-- [📘 Manual Técnico](manual-tecnico,md)  
+- [📘 Manual Técnico](manual-tecnico.md)  
 - [📘 Manual de Usuario](manual-usuario.md)  
