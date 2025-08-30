@@ -1,0 +1,4 @@
+? Sin errores semánticos.
+
+?? Avisos:
+ - L9:C0: Variable 'x' no declarada; se infiere tipo ENTERO

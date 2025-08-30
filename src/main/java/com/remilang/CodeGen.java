@@ -10,14 +10,14 @@ public class CodeGen extends RemiLangBaseVisitor<String> {
     private final StringBuilder out = new StringBuilder();
     private int indent = 0;
 
-    // Tabla de símbolos simple para codegen (nombre -> Tipo)
+    // Scope simple: nombre -> Tipo
     private final Deque<Map<String,Tipo>> scopes = new ArrayDeque<>();
 
     public CodeGen() {
         scopes.push(new HashMap<>()); // global
     }
 
-    /* ============ Utilidades ============ */
+    /* ===== Utilidades ===== */
     private void nl() { out.append('\n'); }
     private void ind() { out.append("    ".repeat(indent)); }
     private Map<String,Tipo> scope() { return scopes.peek(); }
@@ -44,15 +44,13 @@ public class CodeGen extends RemiLangBaseVisitor<String> {
         }
     }
 
-    /* ========= Punto de entrada CORRECTO ========= */
+    /* ====== Entrada ====== */
     public void generate(RemiLangParser.ProgramaContext tree, Path outFile) throws IOException {
-        out.setLength(0);
         emitLine("public class RemiPrograma {");
         indent++;
         emitLine("public static void main(String[] args) throws Exception {");
         indent++;
 
-        // Visitar todas las sentencias
         for (var s : tree.sentencia()) visit(s);
 
         indent--;
@@ -64,7 +62,7 @@ public class CodeGen extends RemiLangBaseVisitor<String> {
         Files.writeString(outFile, out.toString());
     }
 
-    /* ======== Sentencias ======== */
+    /* ====== Sentencias ====== */
     @Override
     public String visitImprimir(RemiLangParser.ImprimirContext ctx) {
         String e = visit(ctx.expr());
@@ -84,20 +82,22 @@ public class CodeGen extends RemiLangBaseVisitor<String> {
 
         String id = ctx.IDENTIFICADOR().getText();
         if (declared(id)) {
-            // sombra local: permitido (ya validado por semántica)
+            // sombreado: permitimos sobrescribir (ya validado por semántica si aplica)
         }
         declare(id, t);
 
         if (ctx.expr()!=null) {
             String rhs = visit(ctx.expr());
-            // si es arreglo desconocido, intenta refinar por RHS
-            if (t==Tipo.ARREGLO_DESCONOCIDO) {
+
+            // Si es ARREGLO_TIPO sin más, intenta refinar con el RHS
+            if (t == Tipo.ARREGLO_DESCONOCIDO) {
                 Tipo tr = tipoExpr(ctx.expr());
-                if (tr==Tipo.ARREGLO_ENTERO || tr==Tipo.ARREGLO_CADENA || tr==Tipo.ARREGLO_BOOLEANO) {
+                if (tr == Tipo.ARREGLO_ENTERO || tr == Tipo.ARREGLO_CADENA || tr == Tipo.ARREGLO_BOOLEANO) {
                     t = tr;
                     declare(id, t);
                 }
             }
+
             emitLine(javaType(t) + " " + id + " = " + rhs + ";");
         } else {
             emitLine(javaType(t) + " " + id + ";");
@@ -107,18 +107,26 @@ public class CodeGen extends RemiLangBaseVisitor<String> {
 
     @Override
     public String visitAsignacion(RemiLangParser.AsignacionContext ctx) {
-        String id = ctx.IDENTIFICADOR().getText();
-        String rhs = visit(ctx.expr());
-        if (!declared(id)) {
-            // Inferimos tipo del RHS y declaramos en el sitio (como el warning de tu semántica)
-            Tipo tr = tipoExpr(ctx.expr());
-            declare(id, tr);
-            emitLine(javaType(tr) + " " + id + " = " + rhs + ";");
-        } else {
-            emitLine(id + " = " + rhs + ";");
-        }
-        return null;
-    }
+          String id = ctx.IDENTIFICADOR().getText();
+          String rhs = visit(ctx.expr());
+
+          if (!declared(id)) {
+               // Inferimos tipo del RHS e inmediatamente declaramos
+               Tipo tr = tipoExpr(ctx.expr());
+
+               // Salvavidas: si el RHS es un literal entero puro (solo dígitos), fuerza ENTERO
+               String rhsText = ctx.expr().getText();
+               if (rhsText.matches("\\d+")) {
+                    tr = Tipo.ENTERO;
+               }
+
+               declare(id, tr);
+               emitLine(javaType(tr) + " " + id + " = " + rhs + ";");
+          } else {
+               emitLine(id + " = " + rhs + ";");
+          }
+          return null;
+     }
 
     @Override
     public String visitCondicional(RemiLangParser.CondicionalContext ctx) {
@@ -163,7 +171,7 @@ public class CodeGen extends RemiLangBaseVisitor<String> {
         return null;
     }
 
-    /* ======== Expresiones ======== */
+    /* ====== Expresiones (String) ====== */
     @Override public String visitExpr_o(RemiLangParser.Expr_oContext ctx) {
         String s = visit(ctx.expr_y(0));
         for (int i=1;i<ctx.expr_y().size();i++) {
@@ -237,15 +245,11 @@ public class CodeGen extends RemiLangBaseVisitor<String> {
     }
 
     @Override public String visitArreglo(RemiLangParser.ArregloContext ctx) {
-        // inferir tipo del primer elemento
+        // inferir tipo del primer elemento para el constructor
         Tipo elem = Tipo.DESCONOCIDO;
         List<String> items = new ArrayList<>();
-        for (int i=0;i<ctx.expr().size();i++) {
-            items.add(visit(ctx.expr(i)));
-        }
-        if (!ctx.expr().isEmpty()) {
-            elem = tipoExpr(ctx.expr(0));
-        }
+        for (int i=0;i<ctx.expr().size();i++) items.add(visit(ctx.expr(i)));
+        if (!ctx.expr().isEmpty()) elem = tipoExpr(ctx.expr(0));
         String ctorType = javaType(Tipo.arregloDe(elem)).replace("[]","");
         return "new " + ctorType + "[]{" + String.join(", ", items) + "}";
     }
@@ -254,12 +258,11 @@ public class CodeGen extends RemiLangBaseVisitor<String> {
         return ctx.IDENTIFICADOR().getText() + "[" + visit(ctx.expr()) + "]";
     }
 
-    /* ====== Inferencia de tipo rápida para codegen ====== */
+    /* ====== Inferencia simple para codegen ====== */
     private Tipo tipoExpr(RemiLangParser.ExprContext e) {
         return new InferTipos().calcular(e);
     }
 
-    /** Mini visitor interno para inferir tipos de expresiones (lo suficiente para codegen). */
     private class InferTipos extends RemiLangBaseVisitor<Tipo> {
         Tipo calcular(ParseTree t) { return visit(t); }
 
@@ -299,7 +302,7 @@ public class CodeGen extends RemiLangBaseVisitor<String> {
             if (ctx.CADENA_LITERAL()!=null) return Tipo.CADENA;
             if (ctx.BOOLEANO_VERDADERO()!=null || ctx.BOOLEANO_FALSO()!=null) return Tipo.BOOLEANO;
             if (ctx.arreglo()!=null) return visit(ctx.arreglo());
-            if (ctx.acceso_arreglo()!=null) return Tipo.DESCONOCIDO; // requeriría símbolo real
+            if (ctx.acceso_arreglo()!=null) return Tipo.DESCONOCIDO;
             if (ctx.IDENTIFICADOR()!=null) {
                 String id = ctx.IDENTIFICADOR().getText();
                 for (var map : scopes) if (map.containsKey(id)) return map.get(id);
