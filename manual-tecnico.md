@@ -54,13 +54,13 @@ src/
 
 ## ⚙️ Flujo de ejecución
 
-1. `mvn clean compile`.
-Compila el proyecto y genera las clases de ANTLR.
-2. `mvn exec:java -Dexec.mainClass=com.remilang.Main -Dexec.args=rutaEntrada.remi`.
-Genera los tokens (`tokens_output.txt`).
-3. `mvn exec:java -Dexec.mainClass=com.remilang.MainParse -Dexec.args=rutaEntrada.remi`.
-Genera el árbol sintáctico (`parse_output.txt`).
-4. `mvn exec:java -Dexec.mainClass=com.remilang.SemanticMain -Dexec.args=rutaEntrada.remi`.
-Verifica errores semánticos (`semantics_report.txt`).
-5. `mvn exec:java -Dexec.mainClass=com.remilang.MainCodeGen -Dexec.args=rutaEntrada.remi`.
-Genera el archivo `RemiPrograma.java`.
+1. `mvn clean compile`
+     Compila el proyecto y genera las clases de ANTLR.
+2. `mvn exec:java -Dexec.mainClass=com.remilang.Main -Dexec.args=rutaEntrada.remi`
+     Genera los tokens (`tokens_output.txt`).
+3. `mvn exec:java -Dexec.mainClass=com.remilang.MainParse -Dexec.args=rutaEntrada.remi`
+     Genera el árbol sintáctico (`parse_output.txt`).
+4. `mvn exec:java -Dexec.mainClass=com.remilang.SemanticMain -Dexec.args=rutaEntrada.remi`
+     Verifica errores semánticos (`semantics_report.txt`).
+5. `mvn exec:java -Dexec.mainClass=com.remilang.MainCodeGen -Dexec.args=rutaEntrada.remi`
+     Genera el archivo `RemiPrograma.java`.
