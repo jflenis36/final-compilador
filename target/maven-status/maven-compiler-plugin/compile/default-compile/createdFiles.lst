@@ -10,10 +10,12 @@ com\remilang\Tipo$1.class
 com\remilang\RemiLangParser$ExprContext.class
 com\remilang\RemiLangListener.class
 com\remilang\RemiLangLexer.class
+com\remilang\MainCodeGen$1.class
 com\remilang\RemiLangParser$Expr_sumaContext.class
 com\remilang\RemiLangParser$Bucle_mientrasContext.class
 com\remilang\RemiLangParser$ArregloContext.class
 com\remilang\SemanticMain$1.class
+com\remilang\CodeGen$1.class
 com\remilang\RemiLangBaseVisitor.class
 com\remilang\RemiLangParser$SentenciaContext.class
 com\remilang\RemiLangBaseListener.class
