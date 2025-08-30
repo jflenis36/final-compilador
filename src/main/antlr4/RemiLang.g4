@@ -129,8 +129,8 @@ COMA                 : ',' ;
 PUNTO_Y_COMA         : ';' ;
 
 // --- Comentarios (como tokens visibles) ---
-COMENTARIO_LINEA     : '#' ~[\r\n]* ;
-COMENTARIO_BLOQUE    : '/*' .*? '*/' ;
+COMENTARIO_LINEA     : '#' ~[\r\n]*         -> channel(HIDDEN);
+COMENTARIO_BLOQUE    : '/*' .*? '*/'        -> channel(HIDDEN);
 
 // --- Espacios en blanco (sí se descartan) ---
 WS                : [ \t\r\n\f]+ -> skip ;
