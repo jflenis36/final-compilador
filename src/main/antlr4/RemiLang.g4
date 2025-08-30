@@ -1,9 +1,7 @@
 grammar RemiLang;
 
+/* ========================= PARSER ========================= */
 
-/* ============================================================================
-   PARSER mínimo (solo para probar y listar tokens). Foco real: LÉXICO.
-   ========================================================================== */
 programa
     : sentencia* EOF
     ;
@@ -11,16 +9,26 @@ programa
 sentencia
     : imprimir (PUNTO_Y_COMA)?
     | asignacion (PUNTO_Y_COMA)?
+    | declaracion (PUNTO_Y_COMA)?
     | condicional
     | bucle_mientras
     ;
 
 imprimir
-    : IMPRIMIR expresion_cadena
+    : IMPRIMIR expr
+    ;
+
+declaracion
+    : (ENTERO_TIPO | CADENA_TIPO | BOOLEANO_TIPO | ARREGLO_TIPO) IDENTIFICADOR (ASIGNAR expr)?
     ;
 
 asignacion
     : IDENTIFICADOR ASIGNAR expr
+    | IDENTIFICADOR SUMAR_ASIGNAR expr
+    | IDENTIFICADOR RESTAR_ASIGNAR expr
+    | IDENTIFICADOR MULTIPLICAR_ASIGNAR expr
+    | IDENTIFICADOR DIVIDIR_ASIGNAR expr
+    | IDENTIFICADOR MODULO_ASIGNAR expr
     ;
 
 condicional
@@ -35,69 +43,63 @@ bloque
     : sentencia*
     ;
 
-/* ------------------ Expresiones (suficiente para listar tokens) ----------- */
-expr
-    : literal
-    | IDENTIFICADOR
-    | PARENTESIS_IZQUIERDO expr PARENTESIS_DERECHO
-    | expr (SUMAR | RESTAR | MULTIPLICAR | DIVIDIR | MODULO) expr
-    | expr (MAYOR_QUE | MENOR_QUE | MAYOR_O_IGUAL_QUE | MENOR_O_IGUAL_QUE | IGUAL_QUE | DIFERENTE_QUE) expr
-    | expr (Y | O) expr
-    | NO expr
-    ;
+/* --------- Expresiones con precedencia (|| a primaria) ---------- */
+expr            : expr_o ;
+expr_o          : expr_y ( O expr_y )* ;
+expr_y          : expr_igualdad ( Y expr_igualdad )* ;
+expr_igualdad   : expr_comparacion ( (IGUAL_QUE | DIFERENTE_QUE) expr_comparacion )* ;
+expr_comparacion: expr_suma ( (MAYOR_QUE | MENOR_QUE | MAYOR_O_IGUAL_QUE | MENOR_O_IGUAL_QUE) expr_suma )* ;
+expr_suma       : expr_mult ( (SUMAR | RESTAR) expr_mult )* ;
+expr_mult       : expr_unaria ( (MULTIPLICAR | DIVIDIR | MODULO) expr_unaria )* ;
+expr_unaria     : (NO | RESTAR | SUMAR) expr_unaria
+                | expr_primaria
+                ;
 
-expresion_cadena
-    : CADENA_LITERAL
-    ;
-
-literal
+expr_primaria
     : ENTERO
+    | CADENA_LITERAL
     | BOOLEANO_VERDADERO
     | BOOLEANO_FALSO
-    | CADENA_LITERAL
     | arreglo
+    | IDENTIFICADOR
+    | acceso_arreglo
+    | PARENTESIS_IZQUIERDO expr PARENTESIS_DERECHO
     ;
 
 arreglo
     : CORCHETE_IZQUIERDO (expr (COMA expr)*)? CORCHETE_DERECHO
     ;
 
-/* ============================================================================
-   LEXER (Fase 1: tokens completos, en español y sin abreviaturas)
-   ========================================================================== */
+acceso_arreglo
+    : IDENTIFICADOR CORCHETE_IZQUIERDO expr CORCHETE_DERECHO
+    ;
 
-// --- Palabras clave / tipos (de la guía) ---
+/* ========================= LEXER ========================== */
+
 ENTERO_TIPO       : 'ENTERO' ;
 CADENA_TIPO       : 'CADENA' ;
 BOOLEANO_TIPO     : 'BOOLEANO' ;
 ARREGLO_TIPO      : 'ARREGLO' ;
 
-// --- Control de flujo (if/else/while) ---
 SI                : 'SI' ;
 SINO              : 'SINO' ;
 FIN               : 'FIN' ;
 MIENTRAS          : 'MIENTRAS' ;
-
-// --- Entrada/salida ---
 IMPRIMIR          : 'IMPRIMIR' ;
 
-// --- Literales ---
 BOOLEANO_VERDADERO: 'VERDADERO' | 'TRUE' ;
 BOOLEANO_FALSO    : 'FALSO'     | 'FALSE' ;
 ENTERO            : DIGITO+ ;
 CADENA_LITERAL    : '"' ( ESCAPE | ~["\\\r\n] )* '"' ;
 
-// --- Identificadores ---
 IDENTIFICADOR     : LETRA (LETRA | DIGITO)* ;
 
-// --- Operadores aritméticos ---
 SUMAR             : '+' ;
 RESTAR            : '-' ;
 MULTIPLICAR       : '*' ;
 DIVIDIR           : '/' ;
 MODULO            : '%' ;
 
-// --- Operadores relacionales / igualdad ---
 MAYOR_O_IGUAL_QUE : '>=' ;
 MENOR_O_IGUAL_QUE : '<=' ;
 IGUAL_QUE         : '==' ;
@@ -105,12 +107,10 @@ DIFERENTE_QUE     : '!=' ;
 MAYOR_QUE         : '>' ;
 MENOR_QUE         : '<' ;
 
-// --- Operadores lógicos ---
 Y                 : '&&' ;
 O                 : '||' ;
 NO                : '!' ;
 
-// --- Asignación (y compuestos si luego amplías) ---
 ASIGNAR           : '=' ;
 SUMAR_ASIGNAR     : '+=' ;
 RESTAR_ASIGNAR    : '-=' ;
@@ -118,7 +118,6 @@ MULTIPLICAR_ASIGNAR: '*=' ;
 DIVIDIR_ASIGNAR   : '/=' ;
 MODULO_ASIGNAR    : '%=' ;
 
-// --- Símbolos / puntuación ---
 PARENTESIS_IZQUIERDO : '(' ;
 PARENTESIS_DERECHO   : ')' ;
 LLAVE_IZQUIERDA      : '{' ;
@@ -128,14 +127,11 @@ CORCHETE_DERECHO     : ']' ;
 COMA                 : ',' ;
 PUNTO_Y_COMA         : ';' ;
 
-// --- Comentarios (como tokens visibles) ---
-COMENTARIO_LINEA     : '#' ~[\r\n]*         -> channel(HIDDEN);
-COMENTARIO_BLOQUE    : '/*' .*? '*/'        -> channel(HIDDEN);
+COMENTARIO_LINEA     : '#' ~[\r\n]*  -> channel(HIDDEN) ;
+COMENTARIO_BLOQUE    : '/*' .*? '*/' -> channel(HIDDEN) ;
 
-// --- Espacios en blanco (sí se descartan) ---
 WS                : [ \t\r\n\f]+ -> skip ;
 
-// --- Fragmentos auxiliares ---
 fragment DIGITO   : [0-9] ;
 fragment LETRA    : [a-zA-Z_] ;
 fragment ESCAPE   : '\\' ( ['"\\] | 'n' | 'r' | 't' ) ;

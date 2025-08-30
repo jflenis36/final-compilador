@@ -53,6 +53,18 @@ public class RemiLangBaseListener implements RemiLangListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterDeclaracion(RemiLangParser.DeclaracionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitDeclaracion(RemiLangParser.DeclaracionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterAsignacion(RemiLangParser.AsignacionContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -113,25 +125,97 @@ public class RemiLangBaseListener implements RemiLangListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterExpresion_cadena(RemiLangParser.Expresion_cadenaContext ctx) { }
+	@Override public void enterExpr_o(RemiLangParser.Expr_oContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitExpresion_cadena(RemiLangParser.Expresion_cadenaContext ctx) { }
+	@Override public void exitExpr_o(RemiLangParser.Expr_oContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLiteral(RemiLangParser.LiteralContext ctx) { }
+	@Override public void enterExpr_y(RemiLangParser.Expr_yContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLiteral(RemiLangParser.LiteralContext ctx) { }
+	@Override public void exitExpr_y(RemiLangParser.Expr_yContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExpr_igualdad(RemiLangParser.Expr_igualdadContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpr_igualdad(RemiLangParser.Expr_igualdadContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExpr_comparacion(RemiLangParser.Expr_comparacionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpr_comparacion(RemiLangParser.Expr_comparacionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExpr_suma(RemiLangParser.Expr_sumaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpr_suma(RemiLangParser.Expr_sumaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExpr_mult(RemiLangParser.Expr_multContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpr_mult(RemiLangParser.Expr_multContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExpr_unaria(RemiLangParser.Expr_unariaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpr_unaria(RemiLangParser.Expr_unariaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExpr_primaria(RemiLangParser.Expr_primariaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpr_primaria(RemiLangParser.Expr_primariaContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -144,6 +228,18 @@ public class RemiLangBaseListener implements RemiLangListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitArreglo(RemiLangParser.ArregloContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAcceso_arreglo(RemiLangParser.Acceso_arregloContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAcceso_arreglo(RemiLangParser.Acceso_arregloContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

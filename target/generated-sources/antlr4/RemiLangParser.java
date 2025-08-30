@@ -27,13 +27,17 @@ public class RemiLangParser extends Parser {
 		LLAVE_DERECHA=38, CORCHETE_IZQUIERDO=39, CORCHETE_DERECHO=40, COMA=41, 
 		PUNTO_Y_COMA=42, COMENTARIO_LINEA=43, COMENTARIO_BLOQUE=44, WS=45;
 	public static final int
-		RULE_programa = 0, RULE_sentencia = 1, RULE_imprimir = 2, RULE_asignacion = 3, 
-		RULE_condicional = 4, RULE_bucle_mientras = 5, RULE_bloque = 6, RULE_expr = 7, 
-		RULE_expresion_cadena = 8, RULE_literal = 9, RULE_arreglo = 10;
+		RULE_programa = 0, RULE_sentencia = 1, RULE_imprimir = 2, RULE_declaracion = 3, 
+		RULE_asignacion = 4, RULE_condicional = 5, RULE_bucle_mientras = 6, RULE_bloque = 7, 
+		RULE_expr = 8, RULE_expr_o = 9, RULE_expr_y = 10, RULE_expr_igualdad = 11, 
+		RULE_expr_comparacion = 12, RULE_expr_suma = 13, RULE_expr_mult = 14, 
+		RULE_expr_unaria = 15, RULE_expr_primaria = 16, RULE_arreglo = 17, RULE_acceso_arreglo = 18;
 	private static String[] makeRuleNames() {
 		return new String[] {
-			"programa", "sentencia", "imprimir", "asignacion", "condicional", "bucle_mientras", 
-			"bloque", "expr", "expresion_cadena", "literal", "arreglo"
+			"programa", "sentencia", "imprimir", "declaracion", "asignacion", "condicional", 
+			"bucle_mientras", "bloque", "expr", "expr_o", "expr_y", "expr_igualdad", 
+			"expr_comparacion", "expr_suma", "expr_mult", "expr_unaria", "expr_primaria", 
+			"arreglo", "acceso_arreglo"
 		};
 	}
 	public static final String[] ruleNames = makeRuleNames();
@@ -133,6 +137,11 @@ public class RemiLangParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof RemiLangListener ) ((RemiLangListener)listener).exitPrograma(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RemiLangVisitor ) return ((RemiLangVisitor<? extends T>)visitor).visitPrograma(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final ProgramaContext programa() throws RecognitionException {
@@ -142,21 +151,21 @@ public class RemiLangParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(25);
+			setState(41);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 17184L) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 17214L) != 0)) {
 				{
 				{
-				setState(22);
+				setState(38);
 				sentencia();
 				}
 				}
-				setState(27);
+				setState(43);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(28);
+			setState(44);
 			match(EOF);
 			}
 		}
@@ -180,6 +189,9 @@ public class RemiLangParser extends Parser {
 		public AsignacionContext asignacion() {
 			return getRuleContext(AsignacionContext.class,0);
 		}
+		public DeclaracionContext declaracion() {
+			return getRuleContext(DeclaracionContext.class,0);
+		}
 		public CondicionalContext condicional() {
 			return getRuleContext(CondicionalContext.class,0);
 		}
@@ -198,6 +210,11 @@ public class RemiLangParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof RemiLangListener ) ((RemiLangListener)listener).exitSentencia(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RemiLangVisitor ) return ((RemiLangVisitor<? extends T>)visitor).visitSentencia(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final SentenciaContext sentencia() throws RecognitionException {
@@ -205,20 +222,20 @@ public class RemiLangParser extends Parser {
 		enterRule(_localctx, 2, RULE_sentencia);
 		int _la;
 		try {
-			setState(40);
+			setState(60);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case IMPRIMIR:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(30);
+				setState(46);
 				imprimir();
-				setState(32);
+				setState(48);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				if (_la==PUNTO_Y_COMA) {
 					{
-					setState(31);
+					setState(47);
 					match(PUNTO_Y_COMA);
 					}
 				}
@@ -228,14 +245,34 @@ public class RemiLangParser extends Parser {
 			case IDENTIFICADOR:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(34);
+				setState(50);
 				asignacion();
-				setState(36);
+				setState(52);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				if (_la==PUNTO_Y_COMA) {
 					{
-					setState(35);
+					setState(51);
+					match(PUNTO_Y_COMA);
+					}
+				}
+
+				}
+				break;
+			case ENTERO_TIPO:
+			case CADENA_TIPO:
+			case BOOLEANO_TIPO:
+			case ARREGLO_TIPO:
+				enterOuterAlt(_localctx, 3);
+				{
+				setState(54);
+				declaracion();
+				setState(56);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+				if (_la==PUNTO_Y_COMA) {
+					{
+					setState(55);
 					match(PUNTO_Y_COMA);
 					}
 				}
@@ -243,16 +280,16 @@ public class RemiLangParser extends Parser {
 				}
 				break;
 			case SI:
-				enterOuterAlt(_localctx, 3);
+				enterOuterAlt(_localctx, 4);
 				{
-				setState(38);
+				setState(58);
 				condicional();
 				}
 				break;
 			case MIENTRAS:
-				enterOuterAlt(_localctx, 4);
+				enterOuterAlt(_localctx, 5);
 				{
-				setState(39);
+				setState(59);
 				bucle_mientras();
 				}
 				break;
@@ -274,8 +311,8 @@ public class RemiLangParser extends Parser {
 	@SuppressWarnings("CheckReturnValue")
 	public static class ImprimirContext extends ParserRuleContext {
 		public TerminalNode IMPRIMIR() { return getToken(RemiLangParser.IMPRIMIR, 0); }
-		public Expresion_cadenaContext expresion_cadena() {
-			return getRuleContext(Expresion_cadenaContext.class,0);
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
 		}
 		public ImprimirContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -289,6 +326,11 @@ public class RemiLangParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof RemiLangListener ) ((RemiLangListener)listener).exitImprimir(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RemiLangVisitor ) return ((RemiLangVisitor<? extends T>)visitor).visitImprimir(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final ImprimirContext imprimir() throws RecognitionException {
@@ -297,10 +339,84 @@ public class RemiLangParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(42);
+			setState(62);
 			match(IMPRIMIR);
-			setState(43);
-			expresion_cadena();
+			setState(63);
+			expr();
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	@SuppressWarnings("CheckReturnValue")
+	public static class DeclaracionContext extends ParserRuleContext {
+		public TerminalNode IDENTIFICADOR() { return getToken(RemiLangParser.IDENTIFICADOR, 0); }
+		public TerminalNode ENTERO_TIPO() { return getToken(RemiLangParser.ENTERO_TIPO, 0); }
+		public TerminalNode CADENA_TIPO() { return getToken(RemiLangParser.CADENA_TIPO, 0); }
+		public TerminalNode BOOLEANO_TIPO() { return getToken(RemiLangParser.BOOLEANO_TIPO, 0); }
+		public TerminalNode ARREGLO_TIPO() { return getToken(RemiLangParser.ARREGLO_TIPO, 0); }
+		public TerminalNode ASIGNAR() { return getToken(RemiLangParser.ASIGNAR, 0); }
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
+		}
+		public DeclaracionContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_declaracion; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof RemiLangListener ) ((RemiLangListener)listener).enterDeclaracion(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof RemiLangListener ) ((RemiLangListener)listener).exitDeclaracion(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RemiLangVisitor ) return ((RemiLangVisitor<? extends T>)visitor).visitDeclaracion(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final DeclaracionContext declaracion() throws RecognitionException {
+		DeclaracionContext _localctx = new DeclaracionContext(_ctx, getState());
+		enterRule(_localctx, 6, RULE_declaracion);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(65);
+			_la = _input.LA(1);
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 30L) != 0)) ) {
+			_errHandler.recoverInline(this);
+			}
+			else {
+				if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+				_errHandler.reportMatch(this);
+				consume();
+			}
+			setState(66);
+			match(IDENTIFICADOR);
+			setState(69);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			if (_la==ASIGNAR) {
+				{
+				setState(67);
+				match(ASIGNAR);
+				setState(68);
+				expr();
+				}
+			}
+
 			}
 		}
 		catch (RecognitionException re) {
@@ -321,6 +437,11 @@ public class RemiLangParser extends Parser {
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class,0);
 		}
+		public TerminalNode SUMAR_ASIGNAR() { return getToken(RemiLangParser.SUMAR_ASIGNAR, 0); }
+		public TerminalNode RESTAR_ASIGNAR() { return getToken(RemiLangParser.RESTAR_ASIGNAR, 0); }
+		public TerminalNode MULTIPLICAR_ASIGNAR() { return getToken(RemiLangParser.MULTIPLICAR_ASIGNAR, 0); }
+		public TerminalNode DIVIDIR_ASIGNAR() { return getToken(RemiLangParser.DIVIDIR_ASIGNAR, 0); }
+		public TerminalNode MODULO_ASIGNAR() { return getToken(RemiLangParser.MODULO_ASIGNAR, 0); }
 		public AsignacionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -333,20 +454,86 @@ public class RemiLangParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof RemiLangListener ) ((RemiLangListener)listener).exitAsignacion(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RemiLangVisitor ) return ((RemiLangVisitor<? extends T>)visitor).visitAsignacion(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final AsignacionContext asignacion() throws RecognitionException {
 		AsignacionContext _localctx = new AsignacionContext(_ctx, getState());
-		enterRule(_localctx, 6, RULE_asignacion);
+		enterRule(_localctx, 8, RULE_asignacion);
 		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(45);
-			match(IDENTIFICADOR);
-			setState(46);
-			match(ASIGNAR);
-			setState(47);
-			expr(0);
+			setState(89);
+			_errHandler.sync(this);
+			switch ( getInterpreter().adaptivePredict(_input,6,_ctx) ) {
+			case 1:
+				enterOuterAlt(_localctx, 1);
+				{
+				setState(71);
+				match(IDENTIFICADOR);
+				setState(72);
+				match(ASIGNAR);
+				setState(73);
+				expr();
+				}
+				break;
+			case 2:
+				enterOuterAlt(_localctx, 2);
+				{
+				setState(74);
+				match(IDENTIFICADOR);
+				setState(75);
+				match(SUMAR_ASIGNAR);
+				setState(76);
+				expr();
+				}
+				break;
+			case 3:
+				enterOuterAlt(_localctx, 3);
+				{
+				setState(77);
+				match(IDENTIFICADOR);
+				setState(78);
+				match(RESTAR_ASIGNAR);
+				setState(79);
+				expr();
+				}
+				break;
+			case 4:
+				enterOuterAlt(_localctx, 4);
+				{
+				setState(80);
+				match(IDENTIFICADOR);
+				setState(81);
+				match(MULTIPLICAR_ASIGNAR);
+				setState(82);
+				expr();
+				}
+				break;
+			case 5:
+				enterOuterAlt(_localctx, 5);
+				{
+				setState(83);
+				match(IDENTIFICADOR);
+				setState(84);
+				match(DIVIDIR_ASIGNAR);
+				setState(85);
+				expr();
+				}
+				break;
+			case 6:
+				enterOuterAlt(_localctx, 6);
+				{
+				setState(86);
+				match(IDENTIFICADOR);
+				setState(87);
+				match(MODULO_ASIGNAR);
+				setState(88);
+				expr();
+				}
+				break;
 			}
 		}
 		catch (RecognitionException re) {
@@ -386,34 +573,39 @@ public class RemiLangParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof RemiLangListener ) ((RemiLangListener)listener).exitCondicional(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RemiLangVisitor ) return ((RemiLangVisitor<? extends T>)visitor).visitCondicional(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final CondicionalContext condicional() throws RecognitionException {
 		CondicionalContext _localctx = new CondicionalContext(_ctx, getState());
-		enterRule(_localctx, 8, RULE_condicional);
+		enterRule(_localctx, 10, RULE_condicional);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(49);
+			setState(91);
 			match(SI);
-			setState(50);
-			expr(0);
-			setState(51);
+			setState(92);
+			expr();
+			setState(93);
 			bloque();
-			setState(54);
+			setState(96);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==SINO) {
 				{
-				setState(52);
+				setState(94);
 				match(SINO);
-				setState(53);
+				setState(95);
 				bloque();
 				}
 			}
 
-			setState(56);
+			setState(98);
 			match(FIN);
 			}
 		}
@@ -450,21 +642,26 @@ public class RemiLangParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof RemiLangListener ) ((RemiLangListener)listener).exitBucle_mientras(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RemiLangVisitor ) return ((RemiLangVisitor<? extends T>)visitor).visitBucle_mientras(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final Bucle_mientrasContext bucle_mientras() throws RecognitionException {
 		Bucle_mientrasContext _localctx = new Bucle_mientrasContext(_ctx, getState());
-		enterRule(_localctx, 10, RULE_bucle_mientras);
+		enterRule(_localctx, 12, RULE_bucle_mientras);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(58);
+			setState(100);
 			match(MIENTRAS);
-			setState(59);
-			expr(0);
-			setState(60);
+			setState(101);
+			expr();
+			setState(102);
 			bloque();
-			setState(61);
+			setState(103);
 			match(FIN);
 			}
 		}
@@ -499,26 +696,31 @@ public class RemiLangParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof RemiLangListener ) ((RemiLangListener)listener).exitBloque(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RemiLangVisitor ) return ((RemiLangVisitor<? extends T>)visitor).visitBloque(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final BloqueContext bloque() throws RecognitionException {
 		BloqueContext _localctx = new BloqueContext(_ctx, getState());
-		enterRule(_localctx, 12, RULE_bloque);
+		enterRule(_localctx, 14, RULE_bloque);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(66);
+			setState(108);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 17184L) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 17214L) != 0)) {
 				{
 				{
-				setState(63);
+				setState(105);
 				sentencia();
 				}
 				}
-				setState(68);
+				setState(110);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
@@ -537,32 +739,9 @@ public class RemiLangParser extends Parser {
 
 	@SuppressWarnings("CheckReturnValue")
 	public static class ExprContext extends ParserRuleContext {
-		public LiteralContext literal() {
-			return getRuleContext(LiteralContext.class,0);
+		public Expr_oContext expr_o() {
+			return getRuleContext(Expr_oContext.class,0);
 		}
-		public TerminalNode IDENTIFICADOR() { return getToken(RemiLangParser.IDENTIFICADOR, 0); }
-		public TerminalNode PARENTESIS_IZQUIERDO() { return getToken(RemiLangParser.PARENTESIS_IZQUIERDO, 0); }
-		public List<ExprContext> expr() {
-			return getRuleContexts(ExprContext.class);
-		}
-		public ExprContext expr(int i) {
-			return getRuleContext(ExprContext.class,i);
-		}
-		public TerminalNode PARENTESIS_DERECHO() { return getToken(RemiLangParser.PARENTESIS_DERECHO, 0); }
-		public TerminalNode NO() { return getToken(RemiLangParser.NO, 0); }
-		public TerminalNode SUMAR() { return getToken(RemiLangParser.SUMAR, 0); }
-		public TerminalNode RESTAR() { return getToken(RemiLangParser.RESTAR, 0); }
-		public TerminalNode MULTIPLICAR() { return getToken(RemiLangParser.MULTIPLICAR, 0); }
-		public TerminalNode DIVIDIR() { return getToken(RemiLangParser.DIVIDIR, 0); }
-		public TerminalNode MODULO() { return getToken(RemiLangParser.MODULO, 0); }
-		public TerminalNode MAYOR_QUE() { return getToken(RemiLangParser.MAYOR_QUE, 0); }
-		public TerminalNode MENOR_QUE() { return getToken(RemiLangParser.MENOR_QUE, 0); }
-		public TerminalNode MAYOR_O_IGUAL_QUE() { return getToken(RemiLangParser.MAYOR_O_IGUAL_QUE, 0); }
-		public TerminalNode MENOR_O_IGUAL_QUE() { return getToken(RemiLangParser.MENOR_O_IGUAL_QUE, 0); }
-		public TerminalNode IGUAL_QUE() { return getToken(RemiLangParser.IGUAL_QUE, 0); }
-		public TerminalNode DIFERENTE_QUE() { return getToken(RemiLangParser.DIFERENTE_QUE, 0); }
-		public TerminalNode Y() { return getToken(RemiLangParser.Y, 0); }
-		public TerminalNode O() { return getToken(RemiLangParser.O, 0); }
 		public ExprContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -575,181 +754,21 @@ public class RemiLangParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof RemiLangListener ) ((RemiLangListener)listener).exitExpr(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RemiLangVisitor ) return ((RemiLangVisitor<? extends T>)visitor).visitExpr(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final ExprContext expr() throws RecognitionException {
-		return expr(0);
-	}
-
-	private ExprContext expr(int _p) throws RecognitionException {
-		ParserRuleContext _parentctx = _ctx;
-		int _parentState = getState();
-		ExprContext _localctx = new ExprContext(_ctx, _parentState);
-		ExprContext _prevctx = _localctx;
-		int _startState = 14;
-		enterRecursionRule(_localctx, 14, RULE_expr, _p);
-		int _la;
-		try {
-			int _alt;
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(78);
-			_errHandler.sync(this);
-			switch (_input.LA(1)) {
-			case BOOLEANO_VERDADERO:
-			case BOOLEANO_FALSO:
-			case ENTERO:
-			case CADENA_LITERAL:
-			case CORCHETE_IZQUIERDO:
-				{
-				setState(70);
-				literal();
-				}
-				break;
-			case IDENTIFICADOR:
-				{
-				setState(71);
-				match(IDENTIFICADOR);
-				}
-				break;
-			case PARENTESIS_IZQUIERDO:
-				{
-				setState(72);
-				match(PARENTESIS_IZQUIERDO);
-				setState(73);
-				expr(0);
-				setState(74);
-				match(PARENTESIS_DERECHO);
-				}
-				break;
-			case NO:
-				{
-				setState(76);
-				match(NO);
-				setState(77);
-				expr(1);
-				}
-				break;
-			default:
-				throw new NoViableAltException(this);
-			}
-			_ctx.stop = _input.LT(-1);
-			setState(91);
-			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,8,_ctx);
-			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
-				if ( _alt==1 ) {
-					if ( _parseListeners!=null ) triggerExitRuleEvent();
-					_prevctx = _localctx;
-					{
-					setState(89);
-					_errHandler.sync(this);
-					switch ( getInterpreter().adaptivePredict(_input,7,_ctx) ) {
-					case 1:
-						{
-						_localctx = new ExprContext(_parentctx, _parentState);
-						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(80);
-						if (!(precpred(_ctx, 4))) throw new FailedPredicateException(this, "precpred(_ctx, 4)");
-						setState(81);
-						_la = _input.LA(1);
-						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 1015808L) != 0)) ) {
-						_errHandler.recoverInline(this);
-						}
-						else {
-							if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
-							_errHandler.reportMatch(this);
-							consume();
-						}
-						setState(82);
-						expr(5);
-						}
-						break;
-					case 2:
-						{
-						_localctx = new ExprContext(_parentctx, _parentState);
-						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(83);
-						if (!(precpred(_ctx, 3))) throw new FailedPredicateException(this, "precpred(_ctx, 3)");
-						setState(84);
-						_la = _input.LA(1);
-						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 66060288L) != 0)) ) {
-						_errHandler.recoverInline(this);
-						}
-						else {
-							if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
-							_errHandler.reportMatch(this);
-							consume();
-						}
-						setState(85);
-						expr(4);
-						}
-						break;
-					case 3:
-						{
-						_localctx = new ExprContext(_parentctx, _parentState);
-						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(86);
-						if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
-						setState(87);
-						_la = _input.LA(1);
-						if ( !(_la==Y || _la==O) ) {
-						_errHandler.recoverInline(this);
-						}
-						else {
-							if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
-							_errHandler.reportMatch(this);
-							consume();
-						}
-						setState(88);
-						expr(3);
-						}
-						break;
-					}
-					} 
-				}
-				setState(93);
-				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,8,_ctx);
-			}
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			unrollRecursionContexts(_parentctx);
-		}
-		return _localctx;
-	}
-
-	@SuppressWarnings("CheckReturnValue")
-	public static class Expresion_cadenaContext extends ParserRuleContext {
-		public TerminalNode CADENA_LITERAL() { return getToken(RemiLangParser.CADENA_LITERAL, 0); }
-		public Expresion_cadenaContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_expresion_cadena; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof RemiLangListener ) ((RemiLangListener)listener).enterExpresion_cadena(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof RemiLangListener ) ((RemiLangListener)listener).exitExpresion_cadena(this);
-		}
-	}
-
-	public final Expresion_cadenaContext expresion_cadena() throws RecognitionException {
-		Expresion_cadenaContext _localctx = new Expresion_cadenaContext(_ctx, getState());
-		enterRule(_localctx, 16, RULE_expresion_cadena);
+		ExprContext _localctx = new ExprContext(_ctx, getState());
+		enterRule(_localctx, 16, RULE_expr);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(94);
-			match(CADENA_LITERAL);
+			setState(111);
+			expr_o();
 			}
 		}
 		catch (RecognitionException re) {
@@ -764,72 +783,668 @@ public class RemiLangParser extends Parser {
 	}
 
 	@SuppressWarnings("CheckReturnValue")
-	public static class LiteralContext extends ParserRuleContext {
-		public TerminalNode ENTERO() { return getToken(RemiLangParser.ENTERO, 0); }
-		public TerminalNode BOOLEANO_VERDADERO() { return getToken(RemiLangParser.BOOLEANO_VERDADERO, 0); }
-		public TerminalNode BOOLEANO_FALSO() { return getToken(RemiLangParser.BOOLEANO_FALSO, 0); }
-		public TerminalNode CADENA_LITERAL() { return getToken(RemiLangParser.CADENA_LITERAL, 0); }
-		public ArregloContext arreglo() {
-			return getRuleContext(ArregloContext.class,0);
+	public static class Expr_oContext extends ParserRuleContext {
+		public List<Expr_yContext> expr_y() {
+			return getRuleContexts(Expr_yContext.class);
 		}
-		public LiteralContext(ParserRuleContext parent, int invokingState) {
+		public Expr_yContext expr_y(int i) {
+			return getRuleContext(Expr_yContext.class,i);
+		}
+		public List<TerminalNode> O() { return getTokens(RemiLangParser.O); }
+		public TerminalNode O(int i) {
+			return getToken(RemiLangParser.O, i);
+		}
+		public Expr_oContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_literal; }
+		@Override public int getRuleIndex() { return RULE_expr_o; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof RemiLangListener ) ((RemiLangListener)listener).enterLiteral(this);
+			if ( listener instanceof RemiLangListener ) ((RemiLangListener)listener).enterExpr_o(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof RemiLangListener ) ((RemiLangListener)listener).exitLiteral(this);
+			if ( listener instanceof RemiLangListener ) ((RemiLangListener)listener).exitExpr_o(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RemiLangVisitor ) return ((RemiLangVisitor<? extends T>)visitor).visitExpr_o(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
-	public final LiteralContext literal() throws RecognitionException {
-		LiteralContext _localctx = new LiteralContext(_ctx, getState());
-		enterRule(_localctx, 18, RULE_literal);
+	public final Expr_oContext expr_o() throws RecognitionException {
+		Expr_oContext _localctx = new Expr_oContext(_ctx, getState());
+		enterRule(_localctx, 18, RULE_expr_o);
+		int _la;
 		try {
-			setState(101);
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(113);
+			expr_y();
+			setState(118);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			while (_la==O) {
+				{
+				{
+				setState(114);
+				match(O);
+				setState(115);
+				expr_y();
+				}
+				}
+				setState(120);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+			}
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	@SuppressWarnings("CheckReturnValue")
+	public static class Expr_yContext extends ParserRuleContext {
+		public List<Expr_igualdadContext> expr_igualdad() {
+			return getRuleContexts(Expr_igualdadContext.class);
+		}
+		public Expr_igualdadContext expr_igualdad(int i) {
+			return getRuleContext(Expr_igualdadContext.class,i);
+		}
+		public List<TerminalNode> Y() { return getTokens(RemiLangParser.Y); }
+		public TerminalNode Y(int i) {
+			return getToken(RemiLangParser.Y, i);
+		}
+		public Expr_yContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_expr_y; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof RemiLangListener ) ((RemiLangListener)listener).enterExpr_y(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof RemiLangListener ) ((RemiLangListener)listener).exitExpr_y(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RemiLangVisitor ) return ((RemiLangVisitor<? extends T>)visitor).visitExpr_y(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final Expr_yContext expr_y() throws RecognitionException {
+		Expr_yContext _localctx = new Expr_yContext(_ctx, getState());
+		enterRule(_localctx, 20, RULE_expr_y);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(121);
+			expr_igualdad();
+			setState(126);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			while (_la==Y) {
+				{
+				{
+				setState(122);
+				match(Y);
+				setState(123);
+				expr_igualdad();
+				}
+				}
+				setState(128);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+			}
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	@SuppressWarnings("CheckReturnValue")
+	public static class Expr_igualdadContext extends ParserRuleContext {
+		public List<Expr_comparacionContext> expr_comparacion() {
+			return getRuleContexts(Expr_comparacionContext.class);
+		}
+		public Expr_comparacionContext expr_comparacion(int i) {
+			return getRuleContext(Expr_comparacionContext.class,i);
+		}
+		public List<TerminalNode> IGUAL_QUE() { return getTokens(RemiLangParser.IGUAL_QUE); }
+		public TerminalNode IGUAL_QUE(int i) {
+			return getToken(RemiLangParser.IGUAL_QUE, i);
+		}
+		public List<TerminalNode> DIFERENTE_QUE() { return getTokens(RemiLangParser.DIFERENTE_QUE); }
+		public TerminalNode DIFERENTE_QUE(int i) {
+			return getToken(RemiLangParser.DIFERENTE_QUE, i);
+		}
+		public Expr_igualdadContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_expr_igualdad; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof RemiLangListener ) ((RemiLangListener)listener).enterExpr_igualdad(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof RemiLangListener ) ((RemiLangListener)listener).exitExpr_igualdad(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RemiLangVisitor ) return ((RemiLangVisitor<? extends T>)visitor).visitExpr_igualdad(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final Expr_igualdadContext expr_igualdad() throws RecognitionException {
+		Expr_igualdadContext _localctx = new Expr_igualdadContext(_ctx, getState());
+		enterRule(_localctx, 22, RULE_expr_igualdad);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(129);
+			expr_comparacion();
+			setState(134);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			while (_la==IGUAL_QUE || _la==DIFERENTE_QUE) {
+				{
+				{
+				setState(130);
+				_la = _input.LA(1);
+				if ( !(_la==IGUAL_QUE || _la==DIFERENTE_QUE) ) {
+				_errHandler.recoverInline(this);
+				}
+				else {
+					if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+					_errHandler.reportMatch(this);
+					consume();
+				}
+				setState(131);
+				expr_comparacion();
+				}
+				}
+				setState(136);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+			}
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	@SuppressWarnings("CheckReturnValue")
+	public static class Expr_comparacionContext extends ParserRuleContext {
+		public List<Expr_sumaContext> expr_suma() {
+			return getRuleContexts(Expr_sumaContext.class);
+		}
+		public Expr_sumaContext expr_suma(int i) {
+			return getRuleContext(Expr_sumaContext.class,i);
+		}
+		public List<TerminalNode> MAYOR_QUE() { return getTokens(RemiLangParser.MAYOR_QUE); }
+		public TerminalNode MAYOR_QUE(int i) {
+			return getToken(RemiLangParser.MAYOR_QUE, i);
+		}
+		public List<TerminalNode> MENOR_QUE() { return getTokens(RemiLangParser.MENOR_QUE); }
+		public TerminalNode MENOR_QUE(int i) {
+			return getToken(RemiLangParser.MENOR_QUE, i);
+		}
+		public List<TerminalNode> MAYOR_O_IGUAL_QUE() { return getTokens(RemiLangParser.MAYOR_O_IGUAL_QUE); }
+		public TerminalNode MAYOR_O_IGUAL_QUE(int i) {
+			return getToken(RemiLangParser.MAYOR_O_IGUAL_QUE, i);
+		}
+		public List<TerminalNode> MENOR_O_IGUAL_QUE() { return getTokens(RemiLangParser.MENOR_O_IGUAL_QUE); }
+		public TerminalNode MENOR_O_IGUAL_QUE(int i) {
+			return getToken(RemiLangParser.MENOR_O_IGUAL_QUE, i);
+		}
+		public Expr_comparacionContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_expr_comparacion; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof RemiLangListener ) ((RemiLangListener)listener).enterExpr_comparacion(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof RemiLangListener ) ((RemiLangListener)listener).exitExpr_comparacion(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RemiLangVisitor ) return ((RemiLangVisitor<? extends T>)visitor).visitExpr_comparacion(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final Expr_comparacionContext expr_comparacion() throws RecognitionException {
+		Expr_comparacionContext _localctx = new Expr_comparacionContext(_ctx, getState());
+		enterRule(_localctx, 24, RULE_expr_comparacion);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(137);
+			expr_suma();
+			setState(142);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 53477376L) != 0)) {
+				{
+				{
+				setState(138);
+				_la = _input.LA(1);
+				if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 53477376L) != 0)) ) {
+				_errHandler.recoverInline(this);
+				}
+				else {
+					if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+					_errHandler.reportMatch(this);
+					consume();
+				}
+				setState(139);
+				expr_suma();
+				}
+				}
+				setState(144);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+			}
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	@SuppressWarnings("CheckReturnValue")
+	public static class Expr_sumaContext extends ParserRuleContext {
+		public List<Expr_multContext> expr_mult() {
+			return getRuleContexts(Expr_multContext.class);
+		}
+		public Expr_multContext expr_mult(int i) {
+			return getRuleContext(Expr_multContext.class,i);
+		}
+		public List<TerminalNode> SUMAR() { return getTokens(RemiLangParser.SUMAR); }
+		public TerminalNode SUMAR(int i) {
+			return getToken(RemiLangParser.SUMAR, i);
+		}
+		public List<TerminalNode> RESTAR() { return getTokens(RemiLangParser.RESTAR); }
+		public TerminalNode RESTAR(int i) {
+			return getToken(RemiLangParser.RESTAR, i);
+		}
+		public Expr_sumaContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_expr_suma; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof RemiLangListener ) ((RemiLangListener)listener).enterExpr_suma(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof RemiLangListener ) ((RemiLangListener)listener).exitExpr_suma(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RemiLangVisitor ) return ((RemiLangVisitor<? extends T>)visitor).visitExpr_suma(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final Expr_sumaContext expr_suma() throws RecognitionException {
+		Expr_sumaContext _localctx = new Expr_sumaContext(_ctx, getState());
+		enterRule(_localctx, 26, RULE_expr_suma);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(145);
+			expr_mult();
+			setState(150);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			while (_la==SUMAR || _la==RESTAR) {
+				{
+				{
+				setState(146);
+				_la = _input.LA(1);
+				if ( !(_la==SUMAR || _la==RESTAR) ) {
+				_errHandler.recoverInline(this);
+				}
+				else {
+					if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+					_errHandler.reportMatch(this);
+					consume();
+				}
+				setState(147);
+				expr_mult();
+				}
+				}
+				setState(152);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+			}
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	@SuppressWarnings("CheckReturnValue")
+	public static class Expr_multContext extends ParserRuleContext {
+		public List<Expr_unariaContext> expr_unaria() {
+			return getRuleContexts(Expr_unariaContext.class);
+		}
+		public Expr_unariaContext expr_unaria(int i) {
+			return getRuleContext(Expr_unariaContext.class,i);
+		}
+		public List<TerminalNode> MULTIPLICAR() { return getTokens(RemiLangParser.MULTIPLICAR); }
+		public TerminalNode MULTIPLICAR(int i) {
+			return getToken(RemiLangParser.MULTIPLICAR, i);
+		}
+		public List<TerminalNode> DIVIDIR() { return getTokens(RemiLangParser.DIVIDIR); }
+		public TerminalNode DIVIDIR(int i) {
+			return getToken(RemiLangParser.DIVIDIR, i);
+		}
+		public List<TerminalNode> MODULO() { return getTokens(RemiLangParser.MODULO); }
+		public TerminalNode MODULO(int i) {
+			return getToken(RemiLangParser.MODULO, i);
+		}
+		public Expr_multContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_expr_mult; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof RemiLangListener ) ((RemiLangListener)listener).enterExpr_mult(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof RemiLangListener ) ((RemiLangListener)listener).exitExpr_mult(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RemiLangVisitor ) return ((RemiLangVisitor<? extends T>)visitor).visitExpr_mult(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final Expr_multContext expr_mult() throws RecognitionException {
+		Expr_multContext _localctx = new Expr_multContext(_ctx, getState());
+		enterRule(_localctx, 28, RULE_expr_mult);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(153);
+			expr_unaria();
+			setState(158);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 917504L) != 0)) {
+				{
+				{
+				setState(154);
+				_la = _input.LA(1);
+				if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 917504L) != 0)) ) {
+				_errHandler.recoverInline(this);
+				}
+				else {
+					if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+					_errHandler.reportMatch(this);
+					consume();
+				}
+				setState(155);
+				expr_unaria();
+				}
+				}
+				setState(160);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+			}
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	@SuppressWarnings("CheckReturnValue")
+	public static class Expr_unariaContext extends ParserRuleContext {
+		public Expr_unariaContext expr_unaria() {
+			return getRuleContext(Expr_unariaContext.class,0);
+		}
+		public TerminalNode NO() { return getToken(RemiLangParser.NO, 0); }
+		public TerminalNode RESTAR() { return getToken(RemiLangParser.RESTAR, 0); }
+		public TerminalNode SUMAR() { return getToken(RemiLangParser.SUMAR, 0); }
+		public Expr_primariaContext expr_primaria() {
+			return getRuleContext(Expr_primariaContext.class,0);
+		}
+		public Expr_unariaContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_expr_unaria; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof RemiLangListener ) ((RemiLangListener)listener).enterExpr_unaria(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof RemiLangListener ) ((RemiLangListener)listener).exitExpr_unaria(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RemiLangVisitor ) return ((RemiLangVisitor<? extends T>)visitor).visitExpr_unaria(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final Expr_unariaContext expr_unaria() throws RecognitionException {
+		Expr_unariaContext _localctx = new Expr_unariaContext(_ctx, getState());
+		enterRule(_localctx, 30, RULE_expr_unaria);
+		int _la;
+		try {
+			setState(164);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
-			case ENTERO:
+			case SUMAR:
+			case RESTAR:
+			case NO:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(96);
-				match(ENTERO);
+				setState(161);
+				_la = _input.LA(1);
+				if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 268533760L) != 0)) ) {
+				_errHandler.recoverInline(this);
+				}
+				else {
+					if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+					_errHandler.reportMatch(this);
+					consume();
+				}
+				setState(162);
+				expr_unaria();
 				}
 				break;
 			case BOOLEANO_VERDADERO:
+			case BOOLEANO_FALSO:
+			case ENTERO:
+			case CADENA_LITERAL:
+			case IDENTIFICADOR:
+			case PARENTESIS_IZQUIERDO:
+			case CORCHETE_IZQUIERDO:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(97);
-				match(BOOLEANO_VERDADERO);
-				}
-				break;
-			case BOOLEANO_FALSO:
-				enterOuterAlt(_localctx, 3);
-				{
-				setState(98);
-				match(BOOLEANO_FALSO);
-				}
-				break;
-			case CADENA_LITERAL:
-				enterOuterAlt(_localctx, 4);
-				{
-				setState(99);
-				match(CADENA_LITERAL);
-				}
-				break;
-			case CORCHETE_IZQUIERDO:
-				enterOuterAlt(_localctx, 5);
-				{
-				setState(100);
-				arreglo();
+				setState(163);
+				expr_primaria();
 				}
 				break;
 			default:
 				throw new NoViableAltException(this);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	@SuppressWarnings("CheckReturnValue")
+	public static class Expr_primariaContext extends ParserRuleContext {
+		public TerminalNode ENTERO() { return getToken(RemiLangParser.ENTERO, 0); }
+		public TerminalNode CADENA_LITERAL() { return getToken(RemiLangParser.CADENA_LITERAL, 0); }
+		public TerminalNode BOOLEANO_VERDADERO() { return getToken(RemiLangParser.BOOLEANO_VERDADERO, 0); }
+		public TerminalNode BOOLEANO_FALSO() { return getToken(RemiLangParser.BOOLEANO_FALSO, 0); }
+		public ArregloContext arreglo() {
+			return getRuleContext(ArregloContext.class,0);
+		}
+		public TerminalNode IDENTIFICADOR() { return getToken(RemiLangParser.IDENTIFICADOR, 0); }
+		public Acceso_arregloContext acceso_arreglo() {
+			return getRuleContext(Acceso_arregloContext.class,0);
+		}
+		public TerminalNode PARENTESIS_IZQUIERDO() { return getToken(RemiLangParser.PARENTESIS_IZQUIERDO, 0); }
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
+		}
+		public TerminalNode PARENTESIS_DERECHO() { return getToken(RemiLangParser.PARENTESIS_DERECHO, 0); }
+		public Expr_primariaContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_expr_primaria; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof RemiLangListener ) ((RemiLangListener)listener).enterExpr_primaria(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof RemiLangListener ) ((RemiLangListener)listener).exitExpr_primaria(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RemiLangVisitor ) return ((RemiLangVisitor<? extends T>)visitor).visitExpr_primaria(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final Expr_primariaContext expr_primaria() throws RecognitionException {
+		Expr_primariaContext _localctx = new Expr_primariaContext(_ctx, getState());
+		enterRule(_localctx, 32, RULE_expr_primaria);
+		try {
+			setState(177);
+			_errHandler.sync(this);
+			switch ( getInterpreter().adaptivePredict(_input,16,_ctx) ) {
+			case 1:
+				enterOuterAlt(_localctx, 1);
+				{
+				setState(166);
+				match(ENTERO);
+				}
+				break;
+			case 2:
+				enterOuterAlt(_localctx, 2);
+				{
+				setState(167);
+				match(CADENA_LITERAL);
+				}
+				break;
+			case 3:
+				enterOuterAlt(_localctx, 3);
+				{
+				setState(168);
+				match(BOOLEANO_VERDADERO);
+				}
+				break;
+			case 4:
+				enterOuterAlt(_localctx, 4);
+				{
+				setState(169);
+				match(BOOLEANO_FALSO);
+				}
+				break;
+			case 5:
+				enterOuterAlt(_localctx, 5);
+				{
+				setState(170);
+				arreglo();
+				}
+				break;
+			case 6:
+				enterOuterAlt(_localctx, 6);
+				{
+				setState(171);
+				match(IDENTIFICADOR);
+				}
+				break;
+			case 7:
+				enterOuterAlt(_localctx, 7);
+				{
+				setState(172);
+				acceso_arreglo();
+				}
+				break;
+			case 8:
+				enterOuterAlt(_localctx, 8);
+				{
+				setState(173);
+				match(PARENTESIS_IZQUIERDO);
+				setState(174);
+				expr();
+				setState(175);
+				match(PARENTESIS_DERECHO);
+				}
+				break;
 			}
 		}
 		catch (RecognitionException re) {
@@ -869,44 +1484,49 @@ public class RemiLangParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof RemiLangListener ) ((RemiLangListener)listener).exitArreglo(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RemiLangVisitor ) return ((RemiLangVisitor<? extends T>)visitor).visitArreglo(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final ArregloContext arreglo() throws RecognitionException {
 		ArregloContext _localctx = new ArregloContext(_ctx, getState());
-		enterRule(_localctx, 20, RULE_arreglo);
+		enterRule(_localctx, 34, RULE_arreglo);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(103);
+			setState(179);
 			match(CORCHETE_IZQUIERDO);
-			setState(112);
+			setState(188);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 584384019456L) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 584384117760L) != 0)) {
 				{
-				setState(104);
-				expr(0);
-				setState(109);
+				setState(180);
+				expr();
+				setState(185);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				while (_la==COMA) {
 					{
 					{
-					setState(105);
+					setState(181);
 					match(COMA);
-					setState(106);
-					expr(0);
+					setState(182);
+					expr();
 					}
 					}
-					setState(111);
+					setState(187);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				}
 				}
 			}
 
-			setState(114);
+			setState(190);
 			match(CORCHETE_DERECHO);
 			}
 		}
@@ -921,93 +1541,183 @@ public class RemiLangParser extends Parser {
 		return _localctx;
 	}
 
-	public boolean sempred(RuleContext _localctx, int ruleIndex, int predIndex) {
-		switch (ruleIndex) {
-		case 7:
-			return expr_sempred((ExprContext)_localctx, predIndex);
+	@SuppressWarnings("CheckReturnValue")
+	public static class Acceso_arregloContext extends ParserRuleContext {
+		public TerminalNode IDENTIFICADOR() { return getToken(RemiLangParser.IDENTIFICADOR, 0); }
+		public TerminalNode CORCHETE_IZQUIERDO() { return getToken(RemiLangParser.CORCHETE_IZQUIERDO, 0); }
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
 		}
-		return true;
+		public TerminalNode CORCHETE_DERECHO() { return getToken(RemiLangParser.CORCHETE_DERECHO, 0); }
+		public Acceso_arregloContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_acceso_arreglo; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof RemiLangListener ) ((RemiLangListener)listener).enterAcceso_arreglo(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof RemiLangListener ) ((RemiLangListener)listener).exitAcceso_arreglo(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RemiLangVisitor ) return ((RemiLangVisitor<? extends T>)visitor).visitAcceso_arreglo(this);
+			else return visitor.visitChildren(this);
+		}
 	}
-	private boolean expr_sempred(ExprContext _localctx, int predIndex) {
-		switch (predIndex) {
-		case 0:
-			return precpred(_ctx, 4);
-		case 1:
-			return precpred(_ctx, 3);
-		case 2:
-			return precpred(_ctx, 2);
+
+	public final Acceso_arregloContext acceso_arreglo() throws RecognitionException {
+		Acceso_arregloContext _localctx = new Acceso_arregloContext(_ctx, getState());
+		enterRule(_localctx, 36, RULE_acceso_arreglo);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(192);
+			match(IDENTIFICADOR);
+			setState(193);
+			match(CORCHETE_IZQUIERDO);
+			setState(194);
+			expr();
+			setState(195);
+			match(CORCHETE_DERECHO);
+			}
 		}
-		return true;
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
 	}
 
 	public static final String _serializedATN =
-		"\u0004\u0001-u\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002\u0002"+
-		"\u0007\u0002\u0002\u0003\u0007\u0003\u0002\u0004\u0007\u0004\u0002\u0005"+
-		"\u0007\u0005\u0002\u0006\u0007\u0006\u0002\u0007\u0007\u0007\u0002\b\u0007"+
-		"\b\u0002\t\u0007\t\u0002\n\u0007\n\u0001\u0000\u0005\u0000\u0018\b\u0000"+
-		"\n\u0000\f\u0000\u001b\t\u0000\u0001\u0000\u0001\u0000\u0001\u0001\u0001"+
-		"\u0001\u0003\u0001!\b\u0001\u0001\u0001\u0001\u0001\u0003\u0001%\b\u0001"+
-		"\u0001\u0001\u0001\u0001\u0003\u0001)\b\u0001\u0001\u0002\u0001\u0002"+
-		"\u0001\u0002\u0001\u0003\u0001\u0003\u0001\u0003\u0001\u0003\u0001\u0004"+
-		"\u0001\u0004\u0001\u0004\u0001\u0004\u0001\u0004\u0003\u00047\b\u0004"+
-		"\u0001\u0004\u0001\u0004\u0001\u0005\u0001\u0005\u0001\u0005\u0001\u0005"+
-		"\u0001\u0005\u0001\u0006\u0005\u0006A\b\u0006\n\u0006\f\u0006D\t\u0006"+
-		"\u0001\u0007\u0001\u0007\u0001\u0007\u0001\u0007\u0001\u0007\u0001\u0007"+
-		"\u0001\u0007\u0001\u0007\u0001\u0007\u0003\u0007O\b\u0007\u0001\u0007"+
-		"\u0001\u0007\u0001\u0007\u0001\u0007\u0001\u0007\u0001\u0007\u0001\u0007"+
-		"\u0001\u0007\u0001\u0007\u0005\u0007Z\b\u0007\n\u0007\f\u0007]\t\u0007"+
-		"\u0001\b\u0001\b\u0001\t\u0001\t\u0001\t\u0001\t\u0001\t\u0003\tf\b\t"+
-		"\u0001\n\u0001\n\u0001\n\u0001\n\u0005\nl\b\n\n\n\f\no\t\n\u0003\nq\b"+
-		"\n\u0001\n\u0001\n\u0001\n\u0000\u0001\u000e\u000b\u0000\u0002\u0004\u0006"+
-		"\b\n\f\u000e\u0010\u0012\u0014\u0000\u0003\u0001\u0000\u000f\u0013\u0001"+
-		"\u0000\u0014\u0019\u0001\u0000\u001a\u001b}\u0000\u0019\u0001\u0000\u0000"+
-		"\u0000\u0002(\u0001\u0000\u0000\u0000\u0004*\u0001\u0000\u0000\u0000\u0006"+
-		"-\u0001\u0000\u0000\u0000\b1\u0001\u0000\u0000\u0000\n:\u0001\u0000\u0000"+
-		"\u0000\fB\u0001\u0000\u0000\u0000\u000eN\u0001\u0000\u0000\u0000\u0010"+
-		"^\u0001\u0000\u0000\u0000\u0012e\u0001\u0000\u0000\u0000\u0014g\u0001"+
-		"\u0000\u0000\u0000\u0016\u0018\u0003\u0002\u0001\u0000\u0017\u0016\u0001"+
-		"\u0000\u0000\u0000\u0018\u001b\u0001\u0000\u0000\u0000\u0019\u0017\u0001"+
-		"\u0000\u0000\u0000\u0019\u001a\u0001\u0000\u0000\u0000\u001a\u001c\u0001"+
-		"\u0000\u0000\u0000\u001b\u0019\u0001\u0000\u0000\u0000\u001c\u001d\u0005"+
-		"\u0000\u0000\u0001\u001d\u0001\u0001\u0000\u0000\u0000\u001e \u0003\u0004"+
-		"\u0002\u0000\u001f!\u0005*\u0000\u0000 \u001f\u0001\u0000\u0000\u0000"+
-		" !\u0001\u0000\u0000\u0000!)\u0001\u0000\u0000\u0000\"$\u0003\u0006\u0003"+
-		"\u0000#%\u0005*\u0000\u0000$#\u0001\u0000\u0000\u0000$%\u0001\u0000\u0000"+
-		"\u0000%)\u0001\u0000\u0000\u0000&)\u0003\b\u0004\u0000\')\u0003\n\u0005"+
-		"\u0000(\u001e\u0001\u0000\u0000\u0000(\"\u0001\u0000\u0000\u0000(&\u0001"+
-		"\u0000\u0000\u0000(\'\u0001\u0000\u0000\u0000)\u0003\u0001\u0000\u0000"+
-		"\u0000*+\u0005\t\u0000\u0000+,\u0003\u0010\b\u0000,\u0005\u0001\u0000"+
-		"\u0000\u0000-.\u0005\u000e\u0000\u0000./\u0005\u001d\u0000\u0000/0\u0003"+
-		"\u000e\u0007\u00000\u0007\u0001\u0000\u0000\u000012\u0005\u0005\u0000"+
-		"\u000023\u0003\u000e\u0007\u000036\u0003\f\u0006\u000045\u0005\u0006\u0000"+
-		"\u000057\u0003\f\u0006\u000064\u0001\u0000\u0000\u000067\u0001\u0000\u0000"+
-		"\u000078\u0001\u0000\u0000\u000089\u0005\u0007\u0000\u00009\t\u0001\u0000"+
-		"\u0000\u0000:;\u0005\b\u0000\u0000;<\u0003\u000e\u0007\u0000<=\u0003\f"+
-		"\u0006\u0000=>\u0005\u0007\u0000\u0000>\u000b\u0001\u0000\u0000\u0000"+
-		"?A\u0003\u0002\u0001\u0000@?\u0001\u0000\u0000\u0000AD\u0001\u0000\u0000"+
-		"\u0000B@\u0001\u0000\u0000\u0000BC\u0001\u0000\u0000\u0000C\r\u0001\u0000"+
-		"\u0000\u0000DB\u0001\u0000\u0000\u0000EF\u0006\u0007\uffff\uffff\u0000"+
-		"FO\u0003\u0012\t\u0000GO\u0005\u000e\u0000\u0000HI\u0005#\u0000\u0000"+
-		"IJ\u0003\u000e\u0007\u0000JK\u0005$\u0000\u0000KO\u0001\u0000\u0000\u0000"+
-		"LM\u0005\u001c\u0000\u0000MO\u0003\u000e\u0007\u0001NE\u0001\u0000\u0000"+
-		"\u0000NG\u0001\u0000\u0000\u0000NH\u0001\u0000\u0000\u0000NL\u0001\u0000"+
-		"\u0000\u0000O[\u0001\u0000\u0000\u0000PQ\n\u0004\u0000\u0000QR\u0007\u0000"+
-		"\u0000\u0000RZ\u0003\u000e\u0007\u0005ST\n\u0003\u0000\u0000TU\u0007\u0001"+
-		"\u0000\u0000UZ\u0003\u000e\u0007\u0004VW\n\u0002\u0000\u0000WX\u0007\u0002"+
-		"\u0000\u0000XZ\u0003\u000e\u0007\u0003YP\u0001\u0000\u0000\u0000YS\u0001"+
-		"\u0000\u0000\u0000YV\u0001\u0000\u0000\u0000Z]\u0001\u0000\u0000\u0000"+
-		"[Y\u0001\u0000\u0000\u0000[\\\u0001\u0000\u0000\u0000\\\u000f\u0001\u0000"+
-		"\u0000\u0000][\u0001\u0000\u0000\u0000^_\u0005\r\u0000\u0000_\u0011\u0001"+
-		"\u0000\u0000\u0000`f\u0005\f\u0000\u0000af\u0005\n\u0000\u0000bf\u0005"+
-		"\u000b\u0000\u0000cf\u0005\r\u0000\u0000df\u0003\u0014\n\u0000e`\u0001"+
-		"\u0000\u0000\u0000ea\u0001\u0000\u0000\u0000eb\u0001\u0000\u0000\u0000"+
-		"ec\u0001\u0000\u0000\u0000ed\u0001\u0000\u0000\u0000f\u0013\u0001\u0000"+
-		"\u0000\u0000gp\u0005\'\u0000\u0000hm\u0003\u000e\u0007\u0000ij\u0005)"+
-		"\u0000\u0000jl\u0003\u000e\u0007\u0000ki\u0001\u0000\u0000\u0000lo\u0001"+
-		"\u0000\u0000\u0000mk\u0001\u0000\u0000\u0000mn\u0001\u0000\u0000\u0000"+
-		"nq\u0001\u0000\u0000\u0000om\u0001\u0000\u0000\u0000ph\u0001\u0000\u0000"+
-		"\u0000pq\u0001\u0000\u0000\u0000qr\u0001\u0000\u0000\u0000rs\u0005(\u0000"+
-		"\u0000s\u0015\u0001\u0000\u0000\u0000\f\u0019 $(6BNY[emp";
+		"\u0004\u0001-\u00c6\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"+
+		"\u0002\u0007\u0002\u0002\u0003\u0007\u0003\u0002\u0004\u0007\u0004\u0002"+
+		"\u0005\u0007\u0005\u0002\u0006\u0007\u0006\u0002\u0007\u0007\u0007\u0002"+
+		"\b\u0007\b\u0002\t\u0007\t\u0002\n\u0007\n\u0002\u000b\u0007\u000b\u0002"+
+		"\f\u0007\f\u0002\r\u0007\r\u0002\u000e\u0007\u000e\u0002\u000f\u0007\u000f"+
+		"\u0002\u0010\u0007\u0010\u0002\u0011\u0007\u0011\u0002\u0012\u0007\u0012"+
+		"\u0001\u0000\u0005\u0000(\b\u0000\n\u0000\f\u0000+\t\u0000\u0001\u0000"+
+		"\u0001\u0000\u0001\u0001\u0001\u0001\u0003\u00011\b\u0001\u0001\u0001"+
+		"\u0001\u0001\u0003\u00015\b\u0001\u0001\u0001\u0001\u0001\u0003\u0001"+
+		"9\b\u0001\u0001\u0001\u0001\u0001\u0003\u0001=\b\u0001\u0001\u0002\u0001"+
+		"\u0002\u0001\u0002\u0001\u0003\u0001\u0003\u0001\u0003\u0001\u0003\u0003"+
+		"\u0003F\b\u0003\u0001\u0004\u0001\u0004\u0001\u0004\u0001\u0004\u0001"+
+		"\u0004\u0001\u0004\u0001\u0004\u0001\u0004\u0001\u0004\u0001\u0004\u0001"+
+		"\u0004\u0001\u0004\u0001\u0004\u0001\u0004\u0001\u0004\u0001\u0004\u0001"+
+		"\u0004\u0001\u0004\u0003\u0004Z\b\u0004\u0001\u0005\u0001\u0005\u0001"+
+		"\u0005\u0001\u0005\u0001\u0005\u0003\u0005a\b\u0005\u0001\u0005\u0001"+
+		"\u0005\u0001\u0006\u0001\u0006\u0001\u0006\u0001\u0006\u0001\u0006\u0001"+
+		"\u0007\u0005\u0007k\b\u0007\n\u0007\f\u0007n\t\u0007\u0001\b\u0001\b\u0001"+
+		"\t\u0001\t\u0001\t\u0005\tu\b\t\n\t\f\tx\t\t\u0001\n\u0001\n\u0001\n\u0005"+
+		"\n}\b\n\n\n\f\n\u0080\t\n\u0001\u000b\u0001\u000b\u0001\u000b\u0005\u000b"+
+		"\u0085\b\u000b\n\u000b\f\u000b\u0088\t\u000b\u0001\f\u0001\f\u0001\f\u0005"+
+		"\f\u008d\b\f\n\f\f\f\u0090\t\f\u0001\r\u0001\r\u0001\r\u0005\r\u0095\b"+
+		"\r\n\r\f\r\u0098\t\r\u0001\u000e\u0001\u000e\u0001\u000e\u0005\u000e\u009d"+
+		"\b\u000e\n\u000e\f\u000e\u00a0\t\u000e\u0001\u000f\u0001\u000f\u0001\u000f"+
+		"\u0003\u000f\u00a5\b\u000f\u0001\u0010\u0001\u0010\u0001\u0010\u0001\u0010"+
+		"\u0001\u0010\u0001\u0010\u0001\u0010\u0001\u0010\u0001\u0010\u0001\u0010"+
+		"\u0001\u0010\u0003\u0010\u00b2\b\u0010\u0001\u0011\u0001\u0011\u0001\u0011"+
+		"\u0001\u0011\u0005\u0011\u00b8\b\u0011\n\u0011\f\u0011\u00bb\t\u0011\u0003"+
+		"\u0011\u00bd\b\u0011\u0001\u0011\u0001\u0011\u0001\u0012\u0001\u0012\u0001"+
+		"\u0012\u0001\u0012\u0001\u0012\u0001\u0012\u0000\u0000\u0013\u0000\u0002"+
+		"\u0004\u0006\b\n\f\u000e\u0010\u0012\u0014\u0016\u0018\u001a\u001c\u001e"+
+		" \"$\u0000\u0006\u0001\u0000\u0001\u0004\u0001\u0000\u0016\u0017\u0002"+
+		"\u0000\u0014\u0015\u0018\u0019\u0001\u0000\u000f\u0010\u0001\u0000\u0011"+
+		"\u0013\u0002\u0000\u000f\u0010\u001c\u001c\u00d2\u0000)\u0001\u0000\u0000"+
+		"\u0000\u0002<\u0001\u0000\u0000\u0000\u0004>\u0001\u0000\u0000\u0000\u0006"+
+		"A\u0001\u0000\u0000\u0000\bY\u0001\u0000\u0000\u0000\n[\u0001\u0000\u0000"+
+		"\u0000\fd\u0001\u0000\u0000\u0000\u000el\u0001\u0000\u0000\u0000\u0010"+
+		"o\u0001\u0000\u0000\u0000\u0012q\u0001\u0000\u0000\u0000\u0014y\u0001"+
+		"\u0000\u0000\u0000\u0016\u0081\u0001\u0000\u0000\u0000\u0018\u0089\u0001"+
+		"\u0000\u0000\u0000\u001a\u0091\u0001\u0000\u0000\u0000\u001c\u0099\u0001"+
+		"\u0000\u0000\u0000\u001e\u00a4\u0001\u0000\u0000\u0000 \u00b1\u0001\u0000"+
+		"\u0000\u0000\"\u00b3\u0001\u0000\u0000\u0000$\u00c0\u0001\u0000\u0000"+
+		"\u0000&(\u0003\u0002\u0001\u0000\'&\u0001\u0000\u0000\u0000(+\u0001\u0000"+
+		"\u0000\u0000)\'\u0001\u0000\u0000\u0000)*\u0001\u0000\u0000\u0000*,\u0001"+
+		"\u0000\u0000\u0000+)\u0001\u0000\u0000\u0000,-\u0005\u0000\u0000\u0001"+
+		"-\u0001\u0001\u0000\u0000\u0000.0\u0003\u0004\u0002\u0000/1\u0005*\u0000"+
+		"\u00000/\u0001\u0000\u0000\u000001\u0001\u0000\u0000\u00001=\u0001\u0000"+
+		"\u0000\u000024\u0003\b\u0004\u000035\u0005*\u0000\u000043\u0001\u0000"+
+		"\u0000\u000045\u0001\u0000\u0000\u00005=\u0001\u0000\u0000\u000068\u0003"+
+		"\u0006\u0003\u000079\u0005*\u0000\u000087\u0001\u0000\u0000\u000089\u0001"+
+		"\u0000\u0000\u00009=\u0001\u0000\u0000\u0000:=\u0003\n\u0005\u0000;=\u0003"+
+		"\f\u0006\u0000<.\u0001\u0000\u0000\u0000<2\u0001\u0000\u0000\u0000<6\u0001"+
+		"\u0000\u0000\u0000<:\u0001\u0000\u0000\u0000<;\u0001\u0000\u0000\u0000"+
+		"=\u0003\u0001\u0000\u0000\u0000>?\u0005\t\u0000\u0000?@\u0003\u0010\b"+
+		"\u0000@\u0005\u0001\u0000\u0000\u0000AB\u0007\u0000\u0000\u0000BE\u0005"+
+		"\u000e\u0000\u0000CD\u0005\u001d\u0000\u0000DF\u0003\u0010\b\u0000EC\u0001"+
+		"\u0000\u0000\u0000EF\u0001\u0000\u0000\u0000F\u0007\u0001\u0000\u0000"+
+		"\u0000GH\u0005\u000e\u0000\u0000HI\u0005\u001d\u0000\u0000IZ\u0003\u0010"+
+		"\b\u0000JK\u0005\u000e\u0000\u0000KL\u0005\u001e\u0000\u0000LZ\u0003\u0010"+
+		"\b\u0000MN\u0005\u000e\u0000\u0000NO\u0005\u001f\u0000\u0000OZ\u0003\u0010"+
+		"\b\u0000PQ\u0005\u000e\u0000\u0000QR\u0005 \u0000\u0000RZ\u0003\u0010"+
+		"\b\u0000ST\u0005\u000e\u0000\u0000TU\u0005!\u0000\u0000UZ\u0003\u0010"+
+		"\b\u0000VW\u0005\u000e\u0000\u0000WX\u0005\"\u0000\u0000XZ\u0003\u0010"+
+		"\b\u0000YG\u0001\u0000\u0000\u0000YJ\u0001\u0000\u0000\u0000YM\u0001\u0000"+
+		"\u0000\u0000YP\u0001\u0000\u0000\u0000YS\u0001\u0000\u0000\u0000YV\u0001"+
+		"\u0000\u0000\u0000Z\t\u0001\u0000\u0000\u0000[\\\u0005\u0005\u0000\u0000"+
+		"\\]\u0003\u0010\b\u0000]`\u0003\u000e\u0007\u0000^_\u0005\u0006\u0000"+
+		"\u0000_a\u0003\u000e\u0007\u0000`^\u0001\u0000\u0000\u0000`a\u0001\u0000"+
+		"\u0000\u0000ab\u0001\u0000\u0000\u0000bc\u0005\u0007\u0000\u0000c\u000b"+
+		"\u0001\u0000\u0000\u0000de\u0005\b\u0000\u0000ef\u0003\u0010\b\u0000f"+
+		"g\u0003\u000e\u0007\u0000gh\u0005\u0007\u0000\u0000h\r\u0001\u0000\u0000"+
+		"\u0000ik\u0003\u0002\u0001\u0000ji\u0001\u0000\u0000\u0000kn\u0001\u0000"+
+		"\u0000\u0000lj\u0001\u0000\u0000\u0000lm\u0001\u0000\u0000\u0000m\u000f"+
+		"\u0001\u0000\u0000\u0000nl\u0001\u0000\u0000\u0000op\u0003\u0012\t\u0000"+
+		"p\u0011\u0001\u0000\u0000\u0000qv\u0003\u0014\n\u0000rs\u0005\u001b\u0000"+
+		"\u0000su\u0003\u0014\n\u0000tr\u0001\u0000\u0000\u0000ux\u0001\u0000\u0000"+
+		"\u0000vt\u0001\u0000\u0000\u0000vw\u0001\u0000\u0000\u0000w\u0013\u0001"+
+		"\u0000\u0000\u0000xv\u0001\u0000\u0000\u0000y~\u0003\u0016\u000b\u0000"+
+		"z{\u0005\u001a\u0000\u0000{}\u0003\u0016\u000b\u0000|z\u0001\u0000\u0000"+
+		"\u0000}\u0080\u0001\u0000\u0000\u0000~|\u0001\u0000\u0000\u0000~\u007f"+
+		"\u0001\u0000\u0000\u0000\u007f\u0015\u0001\u0000\u0000\u0000\u0080~\u0001"+
+		"\u0000\u0000\u0000\u0081\u0086\u0003\u0018\f\u0000\u0082\u0083\u0007\u0001"+
+		"\u0000\u0000\u0083\u0085\u0003\u0018\f\u0000\u0084\u0082\u0001\u0000\u0000"+
+		"\u0000\u0085\u0088\u0001\u0000\u0000\u0000\u0086\u0084\u0001\u0000\u0000"+
+		"\u0000\u0086\u0087\u0001\u0000\u0000\u0000\u0087\u0017\u0001\u0000\u0000"+
+		"\u0000\u0088\u0086\u0001\u0000\u0000\u0000\u0089\u008e\u0003\u001a\r\u0000"+
+		"\u008a\u008b\u0007\u0002\u0000\u0000\u008b\u008d\u0003\u001a\r\u0000\u008c"+
+		"\u008a\u0001\u0000\u0000\u0000\u008d\u0090\u0001\u0000\u0000\u0000\u008e"+
+		"\u008c\u0001\u0000\u0000\u0000\u008e\u008f\u0001\u0000\u0000\u0000\u008f"+
+		"\u0019\u0001\u0000\u0000\u0000\u0090\u008e\u0001\u0000\u0000\u0000\u0091"+
+		"\u0096\u0003\u001c\u000e\u0000\u0092\u0093\u0007\u0003\u0000\u0000\u0093"+
+		"\u0095\u0003\u001c\u000e\u0000\u0094\u0092\u0001\u0000\u0000\u0000\u0095"+
+		"\u0098\u0001\u0000\u0000\u0000\u0096\u0094\u0001\u0000\u0000\u0000\u0096"+
+		"\u0097\u0001\u0000\u0000\u0000\u0097\u001b\u0001\u0000\u0000\u0000\u0098"+
+		"\u0096\u0001\u0000\u0000\u0000\u0099\u009e\u0003\u001e\u000f\u0000\u009a"+
+		"\u009b\u0007\u0004\u0000\u0000\u009b\u009d\u0003\u001e\u000f\u0000\u009c"+
+		"\u009a\u0001\u0000\u0000\u0000\u009d\u00a0\u0001\u0000\u0000\u0000\u009e"+
+		"\u009c\u0001\u0000\u0000\u0000\u009e\u009f\u0001\u0000\u0000\u0000\u009f"+
+		"\u001d\u0001\u0000\u0000\u0000\u00a0\u009e\u0001\u0000\u0000\u0000\u00a1"+
+		"\u00a2\u0007\u0005\u0000\u0000\u00a2\u00a5\u0003\u001e\u000f\u0000\u00a3"+
+		"\u00a5\u0003 \u0010\u0000\u00a4\u00a1\u0001\u0000\u0000\u0000\u00a4\u00a3"+
+		"\u0001\u0000\u0000\u0000\u00a5\u001f\u0001\u0000\u0000\u0000\u00a6\u00b2"+
+		"\u0005\f\u0000\u0000\u00a7\u00b2\u0005\r\u0000\u0000\u00a8\u00b2\u0005"+
+		"\n\u0000\u0000\u00a9\u00b2\u0005\u000b\u0000\u0000\u00aa\u00b2\u0003\""+
+		"\u0011\u0000\u00ab\u00b2\u0005\u000e\u0000\u0000\u00ac\u00b2\u0003$\u0012"+
+		"\u0000\u00ad\u00ae\u0005#\u0000\u0000\u00ae\u00af\u0003\u0010\b\u0000"+
+		"\u00af\u00b0\u0005$\u0000\u0000\u00b0\u00b2\u0001\u0000\u0000\u0000\u00b1"+
+		"\u00a6\u0001\u0000\u0000\u0000\u00b1\u00a7\u0001\u0000\u0000\u0000\u00b1"+
+		"\u00a8\u0001\u0000\u0000\u0000\u00b1\u00a9\u0001\u0000\u0000\u0000\u00b1"+
+		"\u00aa\u0001\u0000\u0000\u0000\u00b1\u00ab\u0001\u0000\u0000\u0000\u00b1"+
+		"\u00ac\u0001\u0000\u0000\u0000\u00b1\u00ad\u0001\u0000\u0000\u0000\u00b2"+
+		"!\u0001\u0000\u0000\u0000\u00b3\u00bc\u0005\'\u0000\u0000\u00b4\u00b9"+
+		"\u0003\u0010\b\u0000\u00b5\u00b6\u0005)\u0000\u0000\u00b6\u00b8\u0003"+
+		"\u0010\b\u0000\u00b7\u00b5\u0001\u0000\u0000\u0000\u00b8\u00bb\u0001\u0000"+
+		"\u0000\u0000\u00b9\u00b7\u0001\u0000\u0000\u0000\u00b9\u00ba\u0001\u0000"+
+		"\u0000\u0000\u00ba\u00bd\u0001\u0000\u0000\u0000\u00bb\u00b9\u0001\u0000"+
+		"\u0000\u0000\u00bc\u00b4\u0001\u0000\u0000\u0000\u00bc\u00bd\u0001\u0000"+
+		"\u0000\u0000\u00bd\u00be\u0001\u0000\u0000\u0000\u00be\u00bf\u0005(\u0000"+
+		"\u0000\u00bf#\u0001\u0000\u0000\u0000\u00c0\u00c1\u0005\u000e\u0000\u0000"+
+		"\u00c1\u00c2\u0005\'\u0000\u0000\u00c2\u00c3\u0003\u0010\b\u0000\u00c3"+
+		"\u00c4\u0005(\u0000\u0000\u00c4%\u0001\u0000\u0000\u0000\u0013)048<EY"+
+		"`lv~\u0086\u008e\u0096\u009e\u00a4\u00b1\u00b9\u00bc";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {
