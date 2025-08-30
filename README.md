@@ -27,17 +27,17 @@ mvn clean compile
 mvn exec:java -Dexec.mainClass=com.remilang.Main -Dexec.args=rutaEntrada.remi
 ```
 
-- Análisis léxico
+- Análisis sintáctico
 ```bash
 mvn exec:java -Dexec.mainClass=com.remilang.MainParse -Dexec.args=rutaEntrada.remi
 ```
 
-- Análisis léxico
+- Análisis semántico
 ```bash
 mvn exec:java -Dexec.mainClass=com.remilang.SemanticMain -Dexec.args=rutaEntrada.remi
 ```
 
-- Análisis léxico
+- Generación de código
 ```bash
 mvn exec:java -Dexec.mainClass=com.remilang.MainCodeGen -Dexec.args=rutaEntrada.remi
 ```
