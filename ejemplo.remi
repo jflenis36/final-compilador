@@ -1,0 +1,13 @@
+# if / else
+SI 5 > 3
+  IMPRIMIR "mayor"
+SINO
+  IMPRIMIR "menor o igual"
+FIN
+
+# while
+x = 0
+MIENTRAS x < 3
+  IMPRIMIR "loop"
+  x = x + 1
+FIN

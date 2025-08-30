@@ -1,0 +1,27 @@
+Comentario : # if / else
+SI         : SI
+Entero     : 5
+MAYOR_QUE  : >
+Entero     : 3
+IMPRIMIR   : IMPRIMIR
+Cadena     : "mayor"
+SINO       : SINO
+IMPRIMIR   : IMPRIMIR
+Cadena     : "menor o igual"
+FIN        : FIN
+Comentario : # while
+Identificador : x
+ASIGNAR    : =
+Entero     : 0
+MIENTRAS   : MIENTRAS
+Identificador : x
+MENOR_QUE  : <
+Entero     : 3
+IMPRIMIR   : IMPRIMIR
+Cadena     : "loop"
+Identificador : x
+ASIGNAR    : =
+Identificador : x
+SUMAR      : +
+Entero     : 1
+FIN        : FIN
