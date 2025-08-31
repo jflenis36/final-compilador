@@ -1,0 +1,13 @@
+# --- tests/success/s1_if_while.remi ---
+# Caso feliz: if/else + while + asignaciones y prints
+SI 5 > 3
+  IMPRIMIR "mayor"
+SINO
+  IMPRIMIR "menor o igual"
+FIN
+
+x = 0
+MIENTRAS x < 3
+  IMPRIMIR "loop"
+  x = x + 1
+FIN

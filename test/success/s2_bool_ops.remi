@@ -1,0 +1,10 @@
+# --- tests/success/s2_bool_ops.remi ---
+# Caso feliz: operaciones booleanas y relacionales
+a = 10
+b = 20
+IMPRIMIR "comparaciones"
+SI (a < b) && !(a == b)
+  IMPRIMIR "ok-booleanos"
+SINO
+  IMPRIMIR "fail-booleanos"
+FIN

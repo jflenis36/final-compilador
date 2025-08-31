@@ -56,11 +56,11 @@ src/
 
 1. `mvn clean compile` <br>
      Compila el proyecto y genera las clases de ANTLR.
-2. `mvn exec:java -Dexec.mainClass=com.remilang.Main -Dexec.args=rutaEntrada.remi`<br>
+2. `mvn "exec:java" "-Dexec.mainClass=com.remilang.Main" "-Dexec.args=ejemplo.remi"`<br>
      Genera los tokens (`tokens_output.txt`).
-3. `mvn exec:java -Dexec.mainClass=com.remilang.MainParse -Dexec.args=rutaEntrada.remi`<br>
+3. `mvn exec:java "-Dexec.mainClass=com.remilang.MainParse" "-Dexec.args=ejemplo.remi"`<br>
      Genera el árbol sintáctico (`parse_output.txt`).
-4. `mvn exec:java -Dexec.mainClass=com.remilang.SemanticMain -Dexec.args=rutaEntrada.remi`<br>
+4. `mvn "-Dexec.mainClass=com.remilang.SemanticMain" "-Dexec.args=ejemplo.remi" exec:java`<br>
      Verifica errores semánticos (`semantics_report.txt`).
-5. `mvn exec:java -Dexec.mainClass=com.remilang.MainCodeGen -Dexec.args=rutaEntrada.remi`<br>
+5. `mvn exec:java "-Dexec.mainClass=com.remilang.MainCodeGen" "-Dexec.args=ejemplo.remi"`<br>
      Genera el archivo `RemiPrograma.java`.

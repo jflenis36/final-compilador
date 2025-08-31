@@ -1,0 +1,5 @@
+# --- tests/parse_error/p1_falta_FIN.remi ---
+# Error de sintaxis: falta FIN en el if
+SI 1 < 2
+  IMPRIMIR "ok"
+# FIN ausente aquí

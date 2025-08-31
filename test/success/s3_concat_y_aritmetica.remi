@@ -1,0 +1,6 @@
+# --- tests/success/s3_concat_y_aritmetica.remi ---
+# Caso feliz: suma de enteros y concatenación con cadenas
+n = 2 + 3 * 4
+IMPRIMIR "n="
+IMPRIMIR n
+IMPRIMIR "resultado: " + n

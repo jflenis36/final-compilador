@@ -1,0 +1,6 @@
+# --- tests/semantic_error/se2_not_sobre_entero.remi ---
+# Error semántico: operador ! sobre entero (debe ser booleano)
+x = 5
+SI !x
+  IMPRIMIR "nunca"
+FIN

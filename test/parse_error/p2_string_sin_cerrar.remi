@@ -1,0 +1,4 @@
+# --- tests/parse_error/p2_string_sin_cerrar.remi ---
+# Error de sintaxis: cadena sin cerrar
+IMPRIMIR "hola
+IMPRIMIR "mundo"

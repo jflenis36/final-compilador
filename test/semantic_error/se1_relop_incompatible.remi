@@ -1,0 +1,6 @@
+# --- tests/semantic_error/se1_relop_incompatible.remi ---
+# Error semántico: comparación entre entero y cadena
+IMPRIMIR "probando"
+SI 3 < "tres"
+  IMPRIMIR "nunca"
+FIN

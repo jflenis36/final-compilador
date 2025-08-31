@@ -21,20 +21,20 @@ Este manual explica cómo usar el compilador **RemiLang**.
      ```
 2. Análisis léxico
      ```bash
-     mvn exec:java -Dexec.mainClass=com.remilang.Main -Dexec.args=rutaEntrada.remi
+     mvn "exec:java" "-Dexec.mainClass=com.remilang.Main" "-Dexec.args=ejemplo.remi"
      ```
      👉 Esto genera tokens_output.txt con todos los tokens.
 3. Análisis sintáctico
      ```bash
-     mvn exec:java -Dexec.mainClass=com.remilang.MainParse -Dexec.args=rutaEntrada.remi
+     mvn exec:java "-Dexec.mainClass=com.remilang.MainParse" "-Dexec.args=ejemplo.remi"
      ```
 4. Análisis semántico
      ```bash
-     mvn exec:java -Dexec.mainClass=com.remilang.SemanticMain -Dexec.args=rutaEntrada.remi
+     mvn "-Dexec.mainClass=com.remilang.SemanticMain" "-Dexec.args=ejemplo.remi" exec:java
      ```
 5. Generación de código
      ```bash
-     mvn exec:java -Dexec.mainClass=com.remilang.MainCodeGen -Dexec.args=rutaEntrada.remi
+     mvn exec:java "-Dexec.mainClass=com.remilang.MainCodeGen" "-Dexec.args=ejemplo.remi"
      ```
 6. Compilar y ejecutar el código generado
      ```bash

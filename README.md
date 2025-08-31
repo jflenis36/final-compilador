@@ -24,22 +24,22 @@ mvn clean compile
 
 - Análisis léxico
 ```bash
-mvn exec:java -Dexec.mainClass=com.remilang.Main -Dexec.args=rutaEntrada.remi
+mvn "exec:java" "-Dexec.mainClass=com.remilang.Main" "-Dexec.args=ejemplo.remi"
 ```
 
 - Análisis sintáctico
 ```bash
-mvn exec:java -Dexec.mainClass=com.remilang.MainParse -Dexec.args=rutaEntrada.remi
+mvn exec:java "-Dexec.mainClass=com.remilang.MainParse" "-Dexec.args=ejemplo.remi"
 ```
 
 - Análisis semántico
 ```bash
-mvn exec:java -Dexec.mainClass=com.remilang.SemanticMain -Dexec.args=rutaEntrada.remi
+mvn "-Dexec.mainClass=com.remilang.SemanticMain" "-Dexec.args=ejemplo.remi" exec:java
 ```
 
 - Generación de código
 ```bash
-mvn exec:java -Dexec.mainClass=com.remilang.MainCodeGen -Dexec.args=rutaEntrada.remi
+mvn exec:java "-Dexec.mainClass=com.remilang.MainCodeGen" "-Dexec.args=ejemplo.remi"
 ```
 
 Esto generará un archivo `RemiPrograma.java` en la carpeta `target/`.
